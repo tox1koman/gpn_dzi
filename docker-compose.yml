@@ -6,20 +6,11 @@ services:
       - "8002:8002"
     volumes:
       - ./data:/data
-      - ./russia.osm.pbf:/data/russia.osm.pbf:ro
     environment:
       - tile_urls=
-    command: >
-      bash -c "
-        valhalla_build_config
-        --mjolnir-tile-dir /data/tiles
-        --mjolnir-tile-extract /data/tiles.tar
-        --mjolnir-tile-url file:///data/tiles.tar
-        --additional-data /data
-        --config /data/valhalla.json &&
-        valhalla_build_tiles
-        -c /data/valhalla.json
-        /data/russia.osm.pbf &&
-        valhalla_service
-        /data/valhalla.json 1
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      "
+      valhalla_build_tiles -c /data/valhalla.json /data/russia.osm.pbf &&
+      valhalla_service /data/valhalla.json 1
       "
